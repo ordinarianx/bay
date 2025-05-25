@@ -107,3 +107,35 @@ body {
   opacity: 0.7;
   cursor: pointer;
 }
+
+/* Logout button styling */
+.logout-button {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: opacity 0.2s ease-in-out;
+  margin-left: 1rem;
+}
+
+.logout-button:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+/* Username label styling */
+.username-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-right: 1rem;
+}
+
+.card-evidence, .card-wager {
+  font-size: 14px;
+  color: #bcbcbc;
+  margin-bottom: 6px;
+}
+.card-evidence strong, .card-wager strong {
+  color: #fff;
+}

@@ -15,6 +15,19 @@ const BetCard = ({ bet }) => {
         </div>
         <div className="card-title">{bet.title}</div>
         <div className="card-body">{bet.body}</div>
+
+          {bet.evidence && (
+            <div className="card-evidence">
+              <strong>Evidence:</strong> {bet.evidence}
+            </div>
+          )}
+
+          {bet.wager && (
+            <div className="card-wager">
+              <strong>Wager:</strong> {bet.wager}
+            </div>
+          )}
+
         <div className="card-actions">
           <button>⚔️ Challenge</button>
           <button>❤️ Like</button>
