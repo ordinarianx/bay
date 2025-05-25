@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000;
+  color: #e6e6e6;
+}
+
+.feed {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.bet-card {
+  display: flex;
+  padding: 16px;
+  border-bottom: 1px solid #2f3336;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  margin-right: 12px;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-header {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.card-header span.name {
+  font-weight: bold;
+  color: #fff;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.card-body {
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-actions button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.card-actions button:hover {
+  color: #1da1f2;
+}
+
+/* Top Navigation Bar */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000; /* Twitter-like dark header */
+  color: white;
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #222;
+}
+
+/* Logo styling */
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+/* Login button */
+.login-button {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.login-button:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
