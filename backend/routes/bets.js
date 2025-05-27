@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT b.id, b.title, b.body, b.evidence, b.wager, b.created_at, u.username
+      SELECT b.id, b.title, b.body, b.evidence, b.wager, b.created_at, u.username, u.name
       FROM bets b
       JOIN users u ON b.user_id = u.id
       ORDER BY b.created_at DESC
@@ -51,6 +51,5 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 export default router;

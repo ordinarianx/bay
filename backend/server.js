@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import betRoutes from './routes/bets.js';
 
 dotenv.config();
-// console.log("Backend is starting...");
 
 const app = express();
 app.use(cors());

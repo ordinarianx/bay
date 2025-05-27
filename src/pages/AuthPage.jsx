@@ -5,6 +5,7 @@ import "../styles/auth.css";
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -13,6 +14,7 @@ const AuthPage = () => {
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setEmail("");
+    setName("");
     setUsername("");
     setPassword("");
   };
@@ -23,7 +25,7 @@ const AuthPage = () => {
     const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
     const payload = isLogin
       ? { email, password }
-      : { email, username, password };
+      : { email, name, username, password };
 
     try {
       const res = await fetch(`http://localhost:5000${endpoint}`, {
@@ -33,13 +35,17 @@ const AuthPage = () => {
       });
 
       const data = await res.json();
-      console.log("📦 Server response:", data); // <- Add this
 
       if (res.ok) {
-        alert(`${isLogin ? "Login" : "Signup"} successful!`);
-        localStorage.setItem("username", data.username || username); 
-        // console.log("✅ Stored to localStorage:", localStorage.getItem("username")); // <- Debug here
-        navigate("/"); // Redirect
+        // Store both name and username in localStorage
+
+        console.log(data.name);
+        console.log(data.username);
+
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("name", data.name);
+        
+        navigate("/"); // Redirect to home
       } else {
         alert(data.message || "Something went wrong.");
       }
@@ -54,13 +60,22 @@ const AuthPage = () => {
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
       <form className="auth-form" onSubmit={handleSubmit}>
         {!isLogin && (
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          <>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </>
         )}
         <input
           type="email"

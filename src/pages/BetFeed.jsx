@@ -6,16 +6,20 @@ import { Link, useNavigate } from "react-router-dom";
 const BetFeed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bets, setBets] = useState([]);
-  const [username, setUsername] = useState(null);
+  const [userData, setUserData] = useState({ username: null, name: null });
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedName = localStorage.getItem("name");
     const storedUsername = localStorage.getItem("username");
+    
     if (storedUsername && storedUsername !== "null" && storedUsername !== "undefined") {
-      setUsername(storedUsername);
+      setUserData({
+        username: storedUsername,
+        name: storedName
+      });
     } else {
-      setUsername(null);
-      navigate("/"); // Redirect logged out users
+      setUserData({ username: null, name: null });
     }
 
     // Fetch real bets from backend
@@ -39,7 +43,10 @@ const BetFeed = () => {
       const res = await fetch("http://localhost:5000/api/bets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newBet, username: storedUsername })
+        body: JSON.stringify({ 
+          ...newBet, 
+          username: storedUsername 
+        })
       });
 
       const data = await res.json();
@@ -57,32 +64,41 @@ const BetFeed = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("username");
-    setUsername(null);
+    localStorage.removeItem("name");
+    setUserData({ username: null, name: null });
     navigate("/");
   };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Top Bar */}
       <div className="flex justify-between items-center mb-6 max-w-xl mx-auto">
-        {!username ? (
+        {!userData.username ? (
           <Link to="/auth" className="login-button">Login / Register</Link>
         ) : (
           <>
-            <span className="username-label">Hi, {username}</span>
+            <span className="username-label">Hi, {userData.name}</span>
             <button onClick={handleLogout} className="logout-button">Log Out</button>
           </>
         )}
-
-        {username && (
-          <button onClick={() => setIsModalOpen(true)} className="login-button">
-            + Post a Bet
-          </button>
-        )}
       </div>
 
-      {bets.map((bet) => (
-        <BetCard key={bet.id} bet={bet} />
-      ))}
+      {/* Feed */}
+      <div className="feed">
+        {bets.map((bet) => (
+          <BetCard key={bet.id} bet={bet} />
+        ))}
+      </div>
+
+      {/* Floating Post Button */}
+      {userData.username && (
+        <button 
+          onClick={() => setIsModalOpen(true)} 
+          className="post-bet-button fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+        >
+          + Post a Bet
+        </button>
+      )}
 
       <NewBetModal
         isOpen={isModalOpen}

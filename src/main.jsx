@@ -2,8 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import BetFeed from "./pages/BetFeed";
-import AuthPage from "./pages/AuthPage"; // new file
-import "./styles/main.css";
+import AuthPage from "./pages/AuthPage";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

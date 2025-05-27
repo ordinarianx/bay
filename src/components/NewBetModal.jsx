@@ -1,4 +1,3 @@
-import React from "react";
 import "../styles/NewbetModal.css";
 
 const NewBetModal = ({ isOpen, onClose, onSubmit }) => {
