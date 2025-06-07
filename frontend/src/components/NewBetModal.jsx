@@ -1,3 +1,11 @@
+/**
+ * NewBetModal component.
+ * 
+ * - Modal form for creating a new bet.
+ * - Calls onSubmit with bet data on submit.
+ */
+
+import React from "react";
 import "../styles/NewbetModal.css";
 
 const NewBetModal = ({ isOpen, onClose, onSubmit }) => {

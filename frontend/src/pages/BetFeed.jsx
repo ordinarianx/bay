@@ -1,5 +1,14 @@
+/**
+ * BetFeed page.
+ * 
+ * - Fetches and displays all bets from the backend.
+ * - Allows logged-in users to post new bets and challenge others' bets.
+ * - Uses BetCard for each bet.
+ */
+
 import React, { useState, useEffect } from "react";
 import BetCard from "../components/BetCard";
+import ChallengeBetModal from "../components/ChallengeBetModal";
 import NewBetModal from "../components/NewBetModal";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -7,55 +16,41 @@ const BetFeed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bets, setBets] = useState([]);
   const [userData, setUserData] = useState({ username: null, name: null });
+  const [challengeModal, setChallengeModal] = useState({ open: false, bet: null });
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedName = localStorage.getItem("name");
     const storedUsername = localStorage.getItem("username");
-    
     if (storedUsername && storedUsername !== "null" && storedUsername !== "undefined") {
-      setUserData({
-        username: storedUsername,
-        name: storedName
-      });
+      setUserData({ username: storedUsername, name: storedName });
     } else {
       setUserData({ username: null, name: null });
     }
 
-    // Fetch real bets from backend
     const fetchBets = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/bets");
+        const res = await fetch("/api/bets");
         const data = await res.json();
         setBets(data.bets || []);
       } catch (err) {
         console.error("Failed to fetch bets:", err);
       }
     };
-
     fetchBets();
   }, [navigate]);
 
   const handleNewBet = async (newBet) => {
     const storedUsername = localStorage.getItem("username");
-
     try {
-      const res = await fetch("http://localhost:5000/api/bets", {
+      const res = await fetch("/api/bets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          ...newBet, 
-          username: storedUsername 
-        })
+        body: JSON.stringify({ ...newBet, username: storedUsername })
       });
-
       const data = await res.json();
-
-      if (res.ok) {
-        setBets([data.bet, ...bets]); // Add to top
-      } else {
-        alert(data.message || "Failed to post bet.");
-      }
+      if (res.ok) setBets([data.bet, ...bets]);
+      else alert(data.message || "Failed to post bet.");
     } catch (err) {
       console.error("Error posting bet:", err);
       alert("Server error.");
@@ -67,6 +62,32 @@ const BetFeed = () => {
     localStorage.removeItem("name");
     setUserData({ username: null, name: null });
     navigate("/");
+  };
+
+  const handleChallengeClick = (bet) => {
+    setChallengeModal({ open: true, bet });
+  };
+
+  const handleChallengeSubmit = async (wager, setError, resetInput) => {
+    const { bet } = challengeModal;
+    try {
+      const res = await fetch(`/api/bets/${bet.id}/challenge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wager, username: userData.username }),
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Challenge failed");
+      } else {
+        setChallengeModal({ open: false, bet: null });
+        setBets(bets => bets.map(b => b.id === bet.id ? data.bet : b));
+        resetInput(bet.challenge_amount || bet.wager || 1);
+      }
+    } catch {
+      setError("Server error.");
+    }
   };
 
   return (
@@ -86,15 +107,20 @@ const BetFeed = () => {
       {/* Feed */}
       <div className="feed">
         {bets.map((bet) => (
-          <BetCard key={bet.id} bet={bet} />
+          <BetCard
+            key={bet.id}
+            bet={bet}
+            currentUser={userData}
+            onChallengeClick={() => handleChallengeClick(bet)}
+          />
         ))}
       </div>
 
       {/* Floating Post Button */}
       {userData.username && (
         <button 
-          onClick={() => setIsModalOpen(true)} 
-          className="post-bet-button fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+          onClick={() => setIsModalOpen(true)}
+          className="post-bet-button"
         >
           + Post a Bet
         </button>
@@ -105,8 +131,19 @@ const BetFeed = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleNewBet}
       />
+
+      {/* Challenge Modal */}
+      <ChallengeBetModal
+        isOpen={challengeModal.open}
+        onClose={() => setChallengeModal({ open: false, bet: null })}
+        onSubmit={handleChallengeSubmit}
+        bet={challengeModal.bet}
+        minWager={challengeModal.bet ? (challengeModal.bet.challenge_amount || challengeModal.bet.wager || 1) : 1}
+      />
     </div>
   );
 };
 
 export default BetFeed;
+// This component renders the main bet feed page, allowing users to view, post, and challenge bets.
+// It includes modals for posting new bets and challenging existing ones, and handles user authentication state.

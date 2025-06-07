@@ -1,16 +1,13 @@
-/* Base Styling */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #0d1117;
   color: #e6e6e6;
-  position: relative;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Feed Container - Centered */
 .feed {
   max-width: 600px;
   margin: 80px auto 40px;
@@ -41,9 +38,7 @@ body {
   object-fit: cover;
 }
 
-.card-content {
-  flex: 1;
-}
+.card-content { flex: 1; }
 
 .card-header {
   font-size: 13px;
@@ -76,11 +71,7 @@ body {
   color: #bcbcbc;
   margin-bottom: 6px;
 }
-
-.card-evidence strong,
-.card-wager strong {
-  color: #fff;
-}
+.card-evidence strong, .card-wager strong { color: #fff; }
 
 .card-actions {
   display: flex;
@@ -100,11 +91,8 @@ body {
   transition: color 0.2s;
 }
 
-.card-actions button:hover {
-  color: #1da1f2;
-}
+.card-actions button:hover { color: #1da1f2; }
 
-/* Fixed Top-Left Username */
 .username-label {
   position: fixed;
   top: 12px;
@@ -115,7 +103,6 @@ body {
   z-index: 999;
 }
 
-/* Fixed Top-Right Logout */
 .logout-button {
   position: fixed;
   top: 12px;
@@ -131,9 +118,7 @@ body {
   z-index: 999;
 }
 
-.logout-button:hover {
-  background-color: #1c222b;
-}
+.logout-button:hover { background-color: #1c222b; }
 
 .post-bet-button {
   position: fixed;
@@ -152,6 +137,53 @@ body {
   transition: background-color 0.2s;
 }
 
-.post-bet-button:hover {
-  background-color: #2ea043;
+.post-bet-button:hover { background-color: #2ea043; }
+
+/* MODAL --- Copy as-is for centering */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  background: rgba(0,0,0,0.5);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999;
 }
+.modal {
+  background: #fff;
+  color: #181a1b;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+  min-width: 300px;
+  max-width: 90vw;
+  margin: 0 !important;
+}
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+.error {
+  color: #dc2626;
+  margin-top: 0.5rem;
+  font-size: 0.95em;
+}
+.modal input[type="number"] {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  width: 70px;
+}
+.modal button {
+  padding: 0.4rem 1.2rem;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal button:hover { background: #2563eb; }
