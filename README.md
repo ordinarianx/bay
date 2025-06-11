@@ -71,10 +71,12 @@ BAY introduces a challenge-based gamified system where users stake points on per
  ✅ Display stats (challenge amount) beside action buttons  
  ✅ Logout button visible on all pages when logged in  
  ✅ Backend API tests using Vitest  
- ⬜ Display stats (likes, bookmarks) beside action buttons
+ ✅ Display stats (likes, bookmarks) beside action buttons
+
+ 
  ⬜ Implement bet resolution (win/loss outcome + point transfer)  
  ⬜ Introduce reminders and goal deadlines  
- ⬜ Build leaderboard and activity feed  
+ ✅ Build leaderboard and activity feed  
  ⬜ Improve backend caching and performance optimizations  
- ⬜ Add mobile-first UI and responsiveness  
+ ✅ Add mobile-first UI and responsiveness  
  ⬜ Expand frontend and integration testing  

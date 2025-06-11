@@ -30,12 +30,6 @@
   flex-shrink: 0;
 }
 
-.username-label {
-  font-weight: 600;
-  color: #ccc;
-  font-size: 1rem;
-}
-
 .logout-button {
   background-color: transparent;
   border: 1px solid #30363d;

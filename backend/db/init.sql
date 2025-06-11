@@ -25,3 +25,37 @@ CREATE TABLE IF NOT EXISTS bets (
   status VARCHAR(20) DEFAULT 'open',             -- Bet status: open, challenged, resolved, etc.
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Likes table
+CREATE TABLE IF NOT EXISTS likes (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    bet_id INT REFERENCES bets(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, bet_id)
+);
+
+-- Bookmarks table
+CREATE TABLE IF NOT EXISTS bookmarks (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    bet_id INT REFERENCES bets(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, bet_id)
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_bets_user_id ON bets(user_id);
+CREATE INDEX IF NOT EXISTS idx_bets_status ON bets(status);
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
+CREATE INDEX IF NOT EXISTS idx_likes_bet_id ON likes(bet_id);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_user_id ON bookmarks(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_bet_id ON bookmarks(bet_id);
+
+-- Optional: Enforce lowercase unique usernames
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
+
+-- Optional: Challenge amount positive constraint
+ALTER TABLE bets
+  ADD CONSTRAINT IF NOT EXISTS challenge_amount_positive CHECK (challenge_amount IS NULL OR challenge_amount > 0);

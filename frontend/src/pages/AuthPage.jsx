@@ -39,9 +39,6 @@ const AuthPage = () => {
       if (res.ok) {
         // Store both name and username in localStorage
 
-        console.log(data.name);
-        console.log(data.username);
-
         localStorage.setItem("username", data.username);
         localStorage.setItem("name", data.name);
         

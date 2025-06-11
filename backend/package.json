@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "vitest --run",
+    "test": "node ./utils/validateTables.js && vitest --run",
     "initdb": "node -e \"import('./db/index.js').then(m => m.initDbIfNeeded())\"",
     "dev": "npm run initdb && npm run test && npm start"
   },

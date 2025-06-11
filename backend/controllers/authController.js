@@ -4,15 +4,25 @@ import pool from '../db/index.js';
 
 export const register = async (req, res) => {
   try {
-
     const { email, username, password, name } = req.body;
 
     if (!email || !username || !password || !name) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
+    // Check if email or username already exists
+    const exists = await pool.query(
+      "SELECT 1 FROM users WHERE email = $1 OR username = $2",
+      [email, username]
+    );
+    if (exists.rows.length > 0) {
+      return res.status(409).json({ message: "Email or username already exists." });
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Insert user
     const result = await pool.query(
       "INSERT INTO users (email, username, password, name) VALUES ($1, $2, $3, $4) RETURNING id, email, username, name",
       [email, username, hashedPassword, name]

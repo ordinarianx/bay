@@ -77,7 +77,9 @@ router.get('/', async (req, res) => {
       SELECT b.id, b.title, b.body, b.evidence, b.wager, b.created_at, b.status,
              b.challenge_amount, b.challenger_id,
              u.username, u.name,
-             cu.username AS challenger_username
+             cu.username AS challenger_username,
+             (SELECT COUNT(*) FROM likes l WHERE l.bet_id = b.id) AS likes_count,
+             (SELECT COUNT(*) FROM bookmarks bm WHERE bm.bet_id = b.id) AS bookmarks_count
       FROM bets b
       JOIN users u ON b.user_id = u.id
       LEFT JOIN users cu ON b.challenger_id = cu.id
@@ -113,20 +115,25 @@ router.post('/:id/challenge', async (req, res) => {
 
     // Get challenger user
     const userResult = await pool.query(
-      'SELECT id, name FROM users WHERE username = $1',
+      'SELECT id, name, points FROM users WHERE username = $1',
       [username]
     );
     if (userResult.rows.length === 0) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    const challengerId = userResult.rows[0].id;
-    if (challengerId === bet.user_id) {
+    const challenger = userResult.rows[0];
+    if (challenger.id === bet.user_id) {
       return res.status(400).json({ message: "You can't challenge your own bet." });
     }
 
     const minAllowed = bet.challenge_amount || bet.wager;
     if (wager < minAllowed) {
       return res.status(400).json({ message: `Wager must be at least ${minAllowed}` });
+    }
+
+    // **Check challenger has enough points**
+    if (challenger.points < wager) {
+      return res.status(400).json({ message: "You don't have enough points to challenge with this wager." });
     }
 
     // Update bet
@@ -136,7 +143,7 @@ router.post('/:id/challenge', async (req, res) => {
            challenger_id = $2,
            status = 'challenged'
        WHERE id = $3`,
-      [wager, challengerId, betId]
+      [wager, challenger.id, betId]
     );
 
     // Return updated bet for frontend (joined for usernames)
@@ -155,6 +162,112 @@ router.post('/:id/challenge', async (req, res) => {
   } catch (err) {
     console.error("Error challenging bet:", err);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Like a bet
+router.post('/:id/like', async (req, res) => {
+  const betId = req.params.id;
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: 'Username required.' });
+
+  try {
+    // Get user id
+    const userRes = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userRes.rows[0].id;
+
+    // Insert like (ignore if exists)
+    await pool.query(
+      `INSERT INTO likes (user_id, bet_id) VALUES ($1, $2)
+       ON CONFLICT (user_id, bet_id) DO NOTHING`,
+      [userId, betId]
+    );
+
+    // Get updated count
+    const countRes = await pool.query('SELECT COUNT(*) FROM likes WHERE bet_id = $1', [betId]);
+    const likesCount = parseInt(countRes.rows[0].count, 10);
+
+    res.json({ message: 'Liked.', likesCount });
+  } catch (err) {
+    console.error('Like error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Unlike a bet
+router.delete('/:id/like', async (req, res) => {
+  const betId = req.params.id;
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: 'Username required.' });
+
+  try {
+    const userRes = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userRes.rows[0].id;
+
+    await pool.query('DELETE FROM likes WHERE user_id = $1 AND bet_id = $2', [userId, betId]);
+
+    // Get updated count
+    const countRes = await pool.query('SELECT COUNT(*) FROM likes WHERE bet_id = $1', [betId]);
+    const likesCount = parseInt(countRes.rows[0].count, 10);
+
+    res.json({ message: 'Unliked.', likesCount });
+  } catch (err) {
+    console.error('Unlike error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Bookmark a bet
+router.post('/:id/bookmark', async (req, res) => {
+  const betId = req.params.id;
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: 'Username required.' });
+
+  try {
+    const userRes = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userRes.rows[0].id;
+
+    await pool.query(
+      `INSERT INTO bookmarks (user_id, bet_id) VALUES ($1, $2)
+       ON CONFLICT (user_id, bet_id) DO NOTHING`,
+      [userId, betId]
+    );
+
+    // Get updated count
+    const countRes = await pool.query('SELECT COUNT(*) FROM bookmarks WHERE bet_id = $1', [betId]);
+    const bookmarksCount = parseInt(countRes.rows[0].count, 10);
+
+    res.json({ message: 'Bookmarked.', bookmarksCount });
+  } catch (err) {
+    console.error('Bookmark error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Unbookmark a bet
+router.delete('/:id/bookmark', async (req, res) => {
+  const betId = req.params.id;
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: 'Username required.' });
+
+  try {
+    const userRes = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (userRes.rows.length === 0) return res.status(404).json({ message: 'User not found.' });
+    const userId = userRes.rows[0].id;
+
+    await pool.query('DELETE FROM bookmarks WHERE user_id = $1 AND bet_id = $2', [userId, betId]);
+
+    // Get updated count
+    const countRes = await pool.query('SELECT COUNT(*) FROM bookmarks WHERE bet_id = $1', [betId]);
+    const bookmarksCount = parseInt(countRes.rows[0].count, 10);
+
+    res.json({ message: 'Unbookmarked.', bookmarksCount });
+  } catch (err) {
+    console.error('Unbookmark error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

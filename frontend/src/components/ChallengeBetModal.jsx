@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import "../styles/main.css";
+import "../styles/betfeed.css";
 
 const ChallengeBetModal = ({
   isOpen,

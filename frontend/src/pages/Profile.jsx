@@ -9,6 +9,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import BetCard from "../components/BetCard";
+import ChallengeBetModal from "../components/ChallengeBetModal";
 import "../styles/profile.css";
 
 const Profile = () => {
@@ -17,6 +18,7 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("bets"); 
+  const [challengeModal, setChallengeModal] = useState({ open: false, bet: null });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -41,30 +43,80 @@ const Profile = () => {
     navigate("/");
   };
 
+  const handleChallengeClick = (bet) => {
+    setChallengeModal({ open: true, bet });
+  };
+
+  const handleChallengeSubmit = async (amount, odds) => {
+    // Logic for submitting a challenge
+    setChallengeModal({ open: false, bet: null });
+    // Refetch profile to update points
+    fetchProfile();
+  };
+
   if (loading) return <div className="profile-page">Loading...</div>;
   if (!userData) return <div className="profile-page">User not found.</div>;
 
+  // Find bets the user has challenged (where they are the challenger)
+  const challengedBets = userData?.bets
+    ? userData.bets.filter(
+        bet =>
+          bet.challenger_username === userData.username // or use id if available
+      )
+    : [];
+
   return (
     <>
+      {localStorage.getItem("username") && (
+        <div style={{ position: "fixed", top: 16, left: 16, zIndex: 100 }}>
+          <Link
+            to={`/profile/${localStorage.getItem("username")}`}
+            title="Go to my profile"
+          >
+            <img
+              src={`https://i.pravatar.cc/40?u=${encodeURIComponent(localStorage.getItem("username"))}`}
+              alt="My profile"
+              className="avatar"
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                border: "2px solid #eee",
+                cursor: "pointer",
+                background: "#222"
+              }}
+            />
+          </Link>
+        </div>
+      )}
+
       <div className="profile-topbar">
         <button onClick={() => navigate("/")} className="home-button">
           Home
         </button>
 
-        <div className="user-info">
-          {!localStorage.getItem("username") ? (
-            <Link to="/auth" className="login-button">
-              Login / Register
-            </Link>
-          ) : (
-            <>
-              <span className="username-label">Hi, {localStorage.getItem("name")}</span>
-              <button onClick={handleLogout} className="logout-button">
-                Log Out
-              </button>
-            </>
-          )}
-        </div>
+        {/* Profile being viewed: their avatar and log out, only if userData.username exists */}
+        {localStorage.getItem("username") === userData.username && (
+          <div className="user-info">
+            <img
+              src={`https://i.pravatar.cc/40?u=${encodeURIComponent(userData.username)}`}
+              alt="profile"
+              className="avatar"
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                verticalAlign: "middle",
+                border: "2px solid #eee",
+                marginRight: "10px",
+                background: "#222"
+              }}
+            />
+            <button onClick={handleLogout} className="logout-button">
+              Log Out
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="profile-page max-w-xl mx-auto p-6">
@@ -89,21 +141,27 @@ const Profile = () => {
           >
             Bookmarks
           </button>
+          <button
+            className={`tab-button ${activeTab === "challenged" ? "active" : ""}`}
+            onClick={() => setActiveTab("challenged")}
+          >
+            Challenged
+          </button>
         </div>
 
         <div className="tab-content">
           {activeTab === "bets" && (
             <div>
-              {userData.bets.length === 0 && <p>No bets yet.</p>}
-              {userData.bets.map((bet) => (
+              {(!userData.bets || userData.bets.length === 0) && <p>No bets yet.</p>}
+              {userData.bets && userData.bets.map((bet) => (
                 <BetCard
                   key={bet.id}
-                  bet={{
-                    ...bet,
-                    username: userData.username,
-                    name: userData.name
+                  bet={bet}
+                  currentUser={{
+                    username: localStorage.getItem("username"),
+                    name: localStorage.getItem("name"),
                   }}
-                  currentUser={userData}
+                  onChallengeClick={() => handleChallengeClick(bet)}
                 />
               ))}
             </div>
@@ -111,18 +169,38 @@ const Profile = () => {
 
           {activeTab === "bookmarks" && (
             <div>
-              {!userData.bookmarks || userData.bookmarks.length === 0 ? (
+              {(!userData.bookmarks || userData.bookmarks.length === 0) ? (
                 <p>No bookmarks yet.</p>
               ) : (
                 userData.bookmarks.map((bet) => (
                   <BetCard
                     key={bet.id}
-                    bet={{
-                      ...bet,
-                      username: userData.username,
-                      name: userData.name
+                    bet={bet}
+                    currentUser={{
+                      username: localStorage.getItem("username"),
+                      name: localStorage.getItem("name"),
                     }}
-                    currentUser={userData}
+                    onChallengeClick={() => handleChallengeClick(bet)}
+                  />
+                ))
+              )}
+            </div>
+          )}
+
+          {activeTab === "challenged" && (
+            <div>
+              {(!challengedBets || challengedBets.length === 0) ? (
+                <p>No challenged bets yet.</p>
+              ) : (
+                challengedBets.map((bet) => (
+                  <BetCard
+                    key={bet.id}
+                    bet={bet}
+                    currentUser={{
+                      username: localStorage.getItem("username"),
+                      name: localStorage.getItem("name"),
+                    }}
+                    onChallengeClick={() => handleChallengeClick(bet)}
                   />
                 ))
               )}
@@ -130,6 +208,14 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <ChallengeBetModal
+        isOpen={challengeModal.open}
+        onClose={() => setChallengeModal({ open: false, bet: null })}
+        onSubmit={handleChallengeSubmit}
+        bet={challengeModal.bet}
+        minWager={challengeModal.bet ? (challengeModal.bet.challenge_amount || challengeModal.bet.wager || 1) : 1}
+      />
     </>
   );
 };

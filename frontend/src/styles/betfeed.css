@@ -9,98 +9,24 @@ body {
 }
 
 .feed {
-  max-width: 600px;
-  margin: 80px auto 40px;
-  padding: 0 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.bet-card {
-  background-color: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 16px auto;
-  max-width: 600px;
-  display: flex;
-  gap: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s;
+@media (min-width: 640px) {
+  .feed {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.bet-card:hover {
-  transform: translateY(-2px);
-}
-
-.avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.card-content { flex: 1; }
-
-.card-header {
-  font-size: 13px;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.card-header span.name {
-  font-weight: 600;
-  color: #fff;
-}
-
-.card-title {
-  font-size: 17px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 8px;
-}
-
-.card-body {
-  font-size: 15px;
-  color: #ccc;
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-.card-evidence,
-.card-wager {
-  font-size: 14px;
-  color: #bcbcbc;
-  margin-bottom: 6px;
-}
-.card-evidence strong, .card-wager strong { color: #fff; }
-
-.card-actions {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px;
-  font-size: 14px;
-  margin-top: 12px;
-}
-
-.card-actions button {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  padding: 4px 6px;
-  transition: color 0.2s;
-}
-
-.card-actions button:hover { color: #1da1f2; }
-
-.username-label {
-  position: fixed;
-  top: 12px;
-  left: 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ccc;
-  z-index: 999;
+@media (min-width: 1024px) {
+  .feed {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .logout-button {
