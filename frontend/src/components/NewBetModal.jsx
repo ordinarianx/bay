@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from "react";
-import "../styles/newbetmodal.css";
+import "../styles/NewBetModal.css";
 
 const NewBetModal = ({ isOpen, onClose, onSubmit, userPoints }) => {
   const [error, setError] = useState("");

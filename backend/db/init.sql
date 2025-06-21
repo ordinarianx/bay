@@ -1,8 +1,6 @@
 -- Database schema for bet_app.
 -- Creates users and bets tables if they do not exist.
 
-CREATE DATABASE IF NOT EXISTS bet_app;
-
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -58,4 +56,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(userna
 
 -- Optional: Challenge amount positive constraint
 ALTER TABLE bets
-  ADD CONSTRAINT IF NOT EXISTS challenge_amount_positive CHECK (challenge_amount IS NULL OR challenge_amount > 0);
+  ADD CONSTRAINT challenge_amount_positive CHECK (challenge_amount IS NULL OR challenge_amount > 0);
