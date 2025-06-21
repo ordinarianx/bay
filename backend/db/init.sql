@@ -55,5 +55,14 @@ CREATE INDEX IF NOT EXISTS idx_bookmarks_bet_id ON bookmarks(bet_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(LOWER(username));
 
 -- Optional: Challenge amount positive constraint
-ALTER TABLE bets
-  ADD CONSTRAINT challenge_amount_positive CHECK (challenge_amount IS NULL OR challenge_amount > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'challenge_amount_positive'
+      AND conrelid = 'bets'::regclass
+  ) THEN
+    ALTER TABLE bets
+      ADD CONSTRAINT challenge_amount_positive CHECK (challenge_amount IS NULL OR challenge_amount > 0);
+  END IF;
+END$$;
