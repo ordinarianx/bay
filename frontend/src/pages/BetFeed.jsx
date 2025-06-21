@@ -58,7 +58,19 @@ const BetFeed = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newBet, username: storedUsername })
       });
-      const data = await res.json();
+      
+      let data;
+      if (res.ok) {
+        data = await res.json();
+      } else {
+        try {
+          data = await res.json();
+        } catch {
+          const text = await res.text();
+          throw new Error(text || "Unknown error");
+        }
+      }
+
       if (res.ok) setBets([data.bet, ...bets]);
       else alert(data.message || "Failed to post bet.");
     } catch (err) {
