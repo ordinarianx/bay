@@ -52,13 +52,14 @@ const BetFeed = () => {
 
   const handleNewBet = async (newBet) => {
     const storedUsername = localStorage.getItem("username");
+    const API_URL = import.meta.env.VITE_API_URL;
     try {
-      const res = await fetch("/api/bets", {
+      const res = await fetch(`${API_URL}/api/bets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newBet, username: storedUsername })
       });
-      
+
       let data;
       if (res.ok) {
         data = await res.json();
