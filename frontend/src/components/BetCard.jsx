@@ -29,8 +29,9 @@ const BetCard = ({ bet, currentUser, onChallengeClick }) => {
     if (!isLoggedIn || likeLoading) return;
     setLikeLoading(true);
     try {
+      const API_URL = import.meta.env.VITE_API_URL;
       const method = liked ? "DELETE" : "POST";
-      const res = await fetch(`/api/bets/${bet.id}/like`, {
+      const res = await fetch(`${API_URL}/api/bets/${bet.id}/like`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: currentUser.username }),
@@ -38,7 +39,7 @@ const BetCard = ({ bet, currentUser, onChallengeClick }) => {
       if (res.ok) {
         const data = await res.json();
         setLiked(!liked);
-        setLikesCount(Number(data.likesCount)); // Ensure integer
+        setLikesCount(Number(data.likesCount));
       }
     } catch (e) {
       // Optionally show error
@@ -51,8 +52,9 @@ const BetCard = ({ bet, currentUser, onChallengeClick }) => {
     if (!isLoggedIn || bookmarkLoading) return;
     setBookmarkLoading(true);
     try {
+      const API_URL = import.meta.env.VITE_API_URL;
       const method = bookmarked ? "DELETE" : "POST";
-      const res = await fetch(`/api/bets/${bet.id}/bookmark`, {
+      const res = await fetch(`${API_URL}/api/bets/${bet.id}/bookmark`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: currentUser.username }),
@@ -60,7 +62,7 @@ const BetCard = ({ bet, currentUser, onChallengeClick }) => {
       if (res.ok) {
         const data = await res.json();
         setBookmarked(!bookmarked);
-        setBookmarksCount(Number(data.bookmarksCount)); // Ensure integer
+        setBookmarksCount(Number(data.bookmarksCount));
       }
     } catch (e) {
       // Optionally show error
