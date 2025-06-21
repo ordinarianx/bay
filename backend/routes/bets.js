@@ -60,11 +60,11 @@ router.post('/', async (req, res) => {
       name: user.name
     };
 
-    res.status(201).json({ bet: betWithUser });
+    res.status(201).json({ success: true, bet: betWithUser });
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Error posting bet:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ success: false, error: err.message });
   } finally {
     client.release();
   }
@@ -273,3 +273,10 @@ router.delete('/:id/bookmark', async (req, res) => {
 
 export default router;
 // This code defines the backend API routes for creating and managing bets.
+
+const res = await fetch(`${API_URL}/api/bets`, { ... });
+if (!res.ok) {
+  const errorText = await res.text();
+  throw new Error(errorText);
+}
+const data = await res.json();
