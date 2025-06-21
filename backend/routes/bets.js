@@ -272,11 +272,3 @@ router.delete('/:id/bookmark', async (req, res) => {
 });
 
 export default router;
-// This code defines the backend API routes for creating and managing bets.
-
-const res = await fetch(`${API_URL}/api/bets`, { ... });
-if (!res.ok) {
-  const errorText = await res.text();
-  throw new Error(errorText);
-}
-const data = await res.json();
