@@ -24,7 +24,8 @@ const Profile = () => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/users/${username}/profile`);
+        const API_URL = import.meta.env.VITE_API_URL;
+        const res = await fetch(`${API_URL}/api/users/${username}/profile`);
         const data = await res.json();
         if (res.ok) setUserData(data.user);
         else setUserData(null);
