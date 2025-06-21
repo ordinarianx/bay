@@ -39,7 +39,8 @@ const BetFeed = () => {
 
     const fetchBets = async () => {
       try {
-        const res = await fetch("/api/bets");
+        const API_URL = import.meta.env.VITE_API_URL;
+        const res = await fetch(`${API_URL}/api/bets`);
         const data = await res.json();
         setBets(data.bets || []);
       } catch (err) {
