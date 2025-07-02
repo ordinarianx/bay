@@ -49,3 +49,17 @@ BAY introduces a challenge-based gamified system where users stake points on per
   _Implemented: basic API tests running with Vitest_
 
 ---
+
+## Screenshots
+-----------------
+
+### Homepage
+![image](https://github.com/user-attachments/assets/84a99bc9-e8d9-4639-9bbc-9df119e324a6)
+
+### Profile page
+![image](https://github.com/user-attachments/assets/40af3619-cfa1-446e-86d6-d3b1813e1d3d)
+
+### New bet overlay
+![image](https://github.com/user-attachments/assets/7b1e4c9d-6b42-42ab-aba1-eb8e12c6f649)
+
+
